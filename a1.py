@@ -58,7 +58,7 @@ MEMBER_REPOS = {
     "Nikhil_Patil": "https://github.com/Nickpatil45/APJFSA_N",
     "Vishruti_Rane": "https://github.com/vishrutirane",
     "Ankita_More": "https://github.com/ANKITAMORE06/APJFSA_N-JAVA.git",
-    "Vaishnavi_Deshmukh": "https://github.com/VaishuDeshmukh-2003"
+    "Vaishnavi_Deshmukh": "https://github.com/VaishuDeshmukh-2003/APJFSA_N.git"
 }
 
 START_DATE = datetime.strptime("2024-10-20", "%Y-%m-%d")
@@ -145,6 +145,7 @@ def clean_target_folder(folder_path):
                     os.unlink(item_path)
                 elif os.path.isdir(item_path):
                     shutil.rmtree(item_path)
+        print("Deleted all files except .git")
 
 def process_repositories():
     excel_data = []
@@ -194,16 +195,19 @@ def main():
                        "Commits Data")
     
     # Print summary
-    try:
-        if os.path.exists(TARGET_FOLDER):
+    if os.path.exists(TARGET_FOLDER) and os.path.isdir(os.path.join(TARGET_FOLDER, ".git")):
+        try:
             repo = Repo(TARGET_FOLDER)
             repo.git.add(A=True)
             repo.index.commit("updated all codes")
             origin = repo.remote(name="origin")
             origin.push()
             print("Pushed cleanup changes to GitHub.")
-    except Exception as e:
-        print(f"Error during Git operations after cleanup: {e}")
+        except Exception as e:
+            print(f"Error during Git operations after cleanup: {e}")
+    else:
+        print(f"Error: {TARGET_FOLDER} is not a Git repository.")
+
     print("\nSummary:")
     print(f"Total repositories processed: {len(MEMBER_REPOS)}")
     if failed_repos:
